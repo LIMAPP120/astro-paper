@@ -2,44 +2,26 @@ import { defineAstroPaperConfig } from "./src/types/config";
 
 export default defineAstroPaperConfig({
   site: {
-    url: "https://astro-paper.pages.dev/",
-    title: "AstroPaper",
-    description: "A minimal, responsive and SEO-friendly Astro blog theme.",
-    author: "Sat Naing",
-    profile: "https://satna.ing",
-    ogImage: "default-og.jpg",
+    url: "https://prepvivo.com", 
+    title: "PrepViVo Blog",
+    description: "PrepViVo Blog is a personal blog about Singapore education, technology, and personal development.",
+    author: "PrepViVo",
     lang: "en",
-    timezone: "Asia/Bangkok",
-    dir: "ltr",
+    timezone: "Asia/Singapore",
   },
   posts: {
-    perPage: 4,
-    perIndex: 4,
+    perPage: 10,
+    perIndex: 5,
   },
   features: {
     lightAndDarkMode: true,
-    dynamicOgImage: true,
+    dynamicOgImage: false,
     showArchives: true,
-    showBackButton: true,
-    editPost: {
-      enabled: true,
-      url: "https://github.com/satnaing/astro-paper/edit/main/",
-    },
-    search: "pagefind",
-    toc: true,
   },
+  // ✅ Kept ONLY the email, removed GitHub, X, and LinkedIn
   socials: [
-    { name: "github",   url: "https://github.com/satnaing/astro-paper" },
-    { name: "x",        url: "https://x.com/username" },
-    { name: "linkedin", url: "https://www.linkedin.com/in/username/" },
-    { name: "mail",     url: "mailto:yourmail@gmail.com" },
+    { name: "mail", url: "mailto:contact@prepvivo.com" },
   ],
-  shareLinks: [
-    { name: "whatsapp", url: "https://wa.me/?text=" },
-    { name: "facebook", url: "https://www.facebook.com/sharer.php?u=" },
-    { name: "x",        url: "https://x.com/intent/post?url=" },
-    { name: "telegram", url: "https://t.me/share/url?url=" },
-    { name: "pinterest", url: "https://pinterest.com/pin/create/button/?url=" },
-    { name: "mail",     url: "mailto:?subject=See%20this%20post&body=" },
-  ],
+  // ✅ Emptied the array to remove the share buttons at the bottom of posts
+  shareLinks: [],
 });

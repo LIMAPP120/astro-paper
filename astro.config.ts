@@ -1,3 +1,4 @@
+// my-dev-blog/astro.config.ts
 import {
   defineConfig,
   envField,
@@ -24,6 +25,7 @@ import config from "./astro-paper.config";
 
 export default defineConfig({
   site: config.site.url,
+  base: "/school-blog", // ✅ Crucial for resolving assets
   integrations: [
     mdx(),
     sitemap({
@@ -40,9 +42,6 @@ export default defineConfig({
     },
   },
   markdown: {
-    // Deprecated: the theme no longer uses remark-toc or remark-collapse. They
-    // stay in package.json so a customised config importing them still builds,
-    // and are removed in v8.
     processor: unified({
       rehypePlugins: [
         rehypeHeadingIds,
