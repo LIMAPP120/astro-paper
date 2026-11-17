@@ -1,14 +1,14 @@
 ---
+// /home/lim/PrepViVo/my-dev-blog/src/pages/posts/[...page].astro
 import type { GetStaticPaths } from "astro";
 import { getCollection } from "astro:content";
 import Layout from "@/layouts/Layout.astro";
 import Header from "@/components/Header.astro";
 import Breadcrumb from "@/components/Breadcrumb.astro";
-import Main from "@/components/Main.astro";
-import Card from "@/components/Card.astro";
 import Footer from "@/components/Footer.astro";
 import Pagination from "@/components/Pagination.astro";
 import { getSortedPosts } from "@/utils/getSortedPosts";
+import { getPostSlug } from "@/utils/getPostPaths";
 import { useTranslations } from "@/i18n";
 import config from "@/config";
 
@@ -26,15 +26,270 @@ const t = useTranslations(locale);
 <Layout title={`${t.pages.postsTitle} | ${config.site.title}`}>
   <Header />
 
-  <Breadcrumb />
+  <div class="portal-container mx-auto w-full max-w-6xl px-4">
+    <Breadcrumb />
 
-  <Main pageTitle={t.pages.postsTitle} pageDesc={t.pages.postsDesc}>
-    <ul>
-      {page.data.map(data => <Card {...data} />)}
-    </ul>
-  </Main>
+    <!-- ===== HERO HEADER ===== -->
+    <div class="hero-card mt-4">
+      <span class="hero-eyebrow">Blog & Insights</span>
+      <h1 class="main-title">
+        {t.pages.postsTitle}
+      </h1>
+      <p class="subhead">
+        {t.pages.postsDesc}
+      </p>
+      <div class="divider"></div>
+    </div>
 
-  <Pagination {page} />
+    <!-- ===== POSTS GRID ===== -->
+    <div class="sections-grid my-12">
+      {
+        page.data.map(post => {
+          const postSlug = getPostSlug(post.id, post.filePath);
+          const category =
+            post.data.tags && post.data.tags.length > 0
+              ? post.data.tags[0]
+              : "Article";
+          const displayDate = post.data.pubDatetime || new Date();
+
+          // Handle default Astro Paper ogImage safely
+          let imageUrl = null;
+          if (post.data.ogImage) {
+            imageUrl =
+              typeof post.data.ogImage === "string"
+                ? post.data.ogImage
+                : (post.data.ogImage as any).src;
+          }
+
+          return (
+            <a href={`/posts/${postSlug}`} class="study-card">
+              {imageUrl && (
+                <div class="card-image-wrapper">
+                  <img src={imageUrl} alt={post.data.title} loading="lazy" />
+                </div>
+              )}
+              <div class="card-content">
+                <h3>{post.data.title}</h3>
+                <p>{post.data.description}</p>
+                <div class="card-meta">
+                  <span class="category">{category}</span>
+                  <span class="date">
+                    {displayDate.toLocaleDateString("en-SG")}
+                  </span>
+                </div>
+              </div>
+            </a>
+          );
+        })
+      }
+    </div>
+
+    <!-- ===== PAGINATION ===== -->
+    <div class="mb-12 flex justify-center">
+      <Pagination {page} />
+    </div>
+  </div>
 
   <Footer noMarginTop={page.lastPage > 1} />
 </Layout>
+
+<style>
+  /* ===== AURORA GLASS LAYOUT ===== */
+  .portal-container {
+    position: relative;
+    isolation: isolate;
+    display: flex;
+    flex-direction: column;
+    gap: 2.25rem;
+  }
+
+  /* ===== HERO ===== */
+  .hero-card {
+    position: relative;
+    z-index: 1;
+    text-align: center;
+    padding: 3.5rem 2rem 3rem;
+    border-radius: 28px;
+    background: var(--card-bg);
+    border: 1px solid var(--card-border);
+    backdrop-filter: var(--backdrop-blur);
+    -webkit-backdrop-filter: var(--backdrop-blur);
+    box-shadow: var(--shadow);
+    overflow: hidden;
+  }
+
+  .hero-card::before {
+    content: "";
+    position: absolute;
+    inset: 0 0 auto 0;
+    height: 4px;
+    background: var(--grad);
+  }
+
+  .hero-eyebrow {
+    display: inline-block;
+    margin-bottom: 1.1rem;
+    padding: 0.35rem 0.9rem;
+    font-size: 0.7rem;
+    font-weight: 700;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    border-radius: 999px;
+    background: rgba(99, 102, 241, 0.12);
+    color: var(--accent);
+    border: 1px solid rgba(99, 102, 241, 0.25);
+  }
+
+  [data-theme="dark"] .hero-eyebrow {
+    background: rgba(129, 140, 248, 0.16);
+    border-color: rgba(129, 140, 248, 0.3);
+  }
+
+  .main-title {
+    font-family: "Plus Jakarta Sans", "Inter", sans-serif;
+    font-size: clamp(2.2rem, 5.5vw, 3.5rem);
+    font-weight: 800;
+    letter-spacing: -0.025em;
+    line-height: 1.1;
+    background: var(--grad);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+
+  .subhead {
+    max-width: 620px;
+    margin: 1.1rem auto 0;
+    color: var(--text-secondary);
+    font-size: 1.02rem;
+  }
+
+  .divider {
+    width: 90px;
+    height: 4px;
+    margin: 1.75rem auto 0;
+    border-radius: 999px;
+    background: var(--grad);
+  }
+
+  /* ===== GRID ===== */
+  .sections-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 1.5rem;
+  }
+
+  /* ===== CARD ===== */
+  .study-card {
+    display: flex;
+    flex-direction: column;
+    border-radius: 20px;
+    background: var(--card-bg);
+    border: 1px solid var(--card-border);
+    backdrop-filter: var(--backdrop-blur);
+    -webkit-backdrop-filter: var(--backdrop-blur);
+    box-shadow: var(--shadow);
+    text-decoration: none;
+    color: var(--card-text);
+    overflow: hidden;
+    transition:
+      transform 0.3s ease,
+      box-shadow 0.3s ease,
+      border-color 0.3s ease,
+      background 0.3s ease;
+  }
+
+  .study-card:hover {
+    transform: translateY(-6px);
+    background: var(--card-bg-hover);
+    border-color: var(--card-border-hover);
+    box-shadow: 0 22px 45px -22px rgba(99, 102, 241, 0.65);
+  }
+
+  [data-theme="dark"] .study-card:hover {
+    box-shadow: 0 22px 45px -22px rgba(129, 140, 248, 0.7);
+  }
+
+  .card-image-wrapper {
+    width: 100%;
+    height: 180px;
+    overflow: hidden;
+    border-bottom: 1px solid var(--border-color);
+  }
+
+  .card-image-wrapper img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.3s ease;
+  }
+
+  .study-card:hover .card-image-wrapper img {
+    transform: scale(1.05);
+  }
+
+  .card-content {
+    padding: 1.5rem 1.4rem 1.4rem;
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+  }
+
+  .study-card h3 {
+    font-family: "Plus Jakarta Sans", "Inter", sans-serif;
+    font-size: 1.15rem;
+    font-weight: 700;
+    letter-spacing: -0.01em;
+    margin-bottom: 0.5rem;
+    line-height: 1.3;
+  }
+
+  .study-card p {
+    font-size: 0.95rem;
+    line-height: 1.55;
+    color: var(--text-secondary);
+    margin-bottom: 1.2rem;
+    flex-grow: 1;
+  }
+
+  /* ===== META (Category & Date) ===== */
+  .card-meta {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-top: 1px solid var(--border-color);
+    padding-top: 1rem;
+    margin-top: auto;
+  }
+
+  .category {
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--accent);
+    background: rgba(99, 102, 241, 0.1);
+    padding: 0.2rem 0.6rem;
+    border-radius: 6px;
+  }
+
+  [data-theme="dark"] .category {
+    background: rgba(129, 140, 248, 0.14);
+  }
+
+  .date {
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    font-weight: 500;
+  }
+
+  @media (max-width: 600px) {
+    .sections-grid {
+      grid-template-columns: 1fr;
+    }
+    .hero-card {
+      padding: 2.5rem 1.25rem 2.25rem;
+      border-radius: 22px;
+    }
+  }
+</style>

@@ -1,4 +1,5 @@
 ---
+// /home/lim/PrepViVo/my-dev-blog/src/pages/posts/[...slug]/index.astro
 import { type CollectionEntry, getCollection, render } from "astro:content";
 import PostLayout from "@/layouts/PostLayout.astro";
 import Header from "@/components/Header.astro";
@@ -24,8 +25,6 @@ export async function getStaticPaths() {
     params: { slug: getPostSlug(post.id, post.filePath) },
     props: {
       post,
-      // sortedPosts is newest-first, so "older" (prev) is a higher index
-      // and "newer" (next) is a lower index.
       prevPost:
         index < sortedPosts.length - 1
           ? {
@@ -82,7 +81,6 @@ let ogImageUrl: string | undefined;
 if (typeof initOgImage === "string") {
   ogImageUrl = initOgImage;
 } else if (initOgImage) {
-  // ✅ FIX: Safely cast to any if the schema hasn't been updated to accept ImageMetadata yet
   ogImageUrl = (initOgImage as any).src;
 }
 
@@ -111,12 +109,7 @@ const ogImage = ogImageUrl
 
   <BackButton />
 
-  <main
-    id="main-content"
-    class:list={["app-layout", { "mt-8": !config.features.showBackButton }]}
-    data-pagefind-body
-  >
-    <!-- 👇 CENTERED BLOG WRAPPER 👇 -->
+  <main id="main-content" class:list={["app-layout mt-8"]} data-pagefind-body>
     <div class="mx-auto w-full max-w-3xl">
       <h1
         style={{ viewTransitionName: toTransitionName(post.id) }}
@@ -139,7 +132,6 @@ const ogImage = ogImageUrl
         <EditPost {hideEditPost} {post} class="max-sm:hidden" />
       </div>
 
-      <!-- 👇 HERO IMAGE FOR BLOG LOOK 👇 -->
       {
         ogImageUrl && !ogImageUrl.includes("astropaper-og") && (
           <img
@@ -186,12 +178,24 @@ const ogImage = ogImageUrl
       <hr class="my-8 border-dashed" />
 
       <AdjacentPostNav {prevPost} {nextPost} />
+
+      <!-- Copyright Footer -->
+      <div class="text-muted-foreground mt-16 mb-8 text-center text-sm">
+        Copyright © 2026 Prepvivo. All rights reserved.
+      </div>
     </div>
-    <!-- 👆 END OF CENTERED WRAPPER 👆 -->
   </main>
   <Footer />
 </PostLayout>
 
+<style is:global>
+  /* Hide duplicate H1s inside the Markdown content so we only show the Astro title */
+  .app-prose h1:first-child {
+    display: none !important;
+  }
+</style>
+
+<!-- The rest of the script remains exactly the same as your original file -->
 <script is:inline data-astro-rerun>
   function createProgressBar() {
     const progressContainer = document.createElement("div");
@@ -290,7 +294,6 @@ const ogImage = ogImageUrl
   }
   attachCopyButtons();
 
-  /** Accessible image lightbox for article images. */
   function initLightbox() {
     const article = document.getElementById("article");
     if (!article) return;
@@ -302,8 +305,6 @@ const ogImage = ogImageUrl
     let lastFocused = null;
     let removeDragListeners = null;
 
-    // Defer attribute mutations so they don't push the LCP timestamp.
-    // Event listeners below use delegation and don't need the attributes to exist yet.
     requestAnimationFrame(() => {
       const images = Array.from(article.querySelectorAll("img"));
       for (const image of images) {
@@ -364,7 +365,6 @@ const ogImage = ogImageUrl
 
       function applyTransform() {
         image.style.transform = `scale(${currentScale}) translate(${translateX}px, ${translateY}px)`;
-        // A backdrop click only closes at fit size, so drop the zoom-out cursor while zoomed.
         overlay?.classList.toggle("cursor-zoom-out", currentScale <= 1);
       }
 
@@ -377,7 +377,6 @@ const ogImage = ogImageUrl
         overlay?.classList.add("cursor-zoom-out");
       }
 
-      // Keep the zoomed image from being panned past its edges.
       function clampTranslate() {
         if (!overlay) return;
         const maxX = Math.max(
@@ -452,7 +451,6 @@ const ogImage = ogImageUrl
               Math.max(1, initialScale * (dist / initialDist))
             );
 
-            // Zoom to the geometric center of the two fingers
             const midX = (t[0].clientX + t[1].clientX) / 2;
             const midY = (t[0].clientY + t[1].clientY) / 2;
             const ox = overlay.clientWidth / 2;
@@ -515,7 +513,6 @@ const ogImage = ogImageUrl
             resetTransform();
           } else {
             image.setAttribute("data-zoom", "in");
-            // Zoom to cursor: adjust translate so the point under cursor stays fixed
             const ox = overlay.clientWidth / 2;
             const oy = overlay.clientHeight / 2;
             translateX =
@@ -601,7 +598,7 @@ const ogImage = ogImageUrl
       }
       const remove = () => el.remove();
       el.addEventListener("transitionend", remove, { once: true });
-      setTimeout(remove, 250); // fallback in case transitionend never fires
+      setTimeout(remove, 250);
       el.classList.remove("opacity-100");
     }
 
@@ -613,7 +610,6 @@ const ogImage = ogImageUrl
       }
     }
 
-    // Keep keyboard focus inside the open dialog.
     function trapFocus(e) {
       if (!overlay) return;
       const focusables = overlay.querySelectorAll(
