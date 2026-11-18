@@ -32,6 +32,52 @@ const homePath = getRelativeLocaleUrl(locale, "");
     class="app-layout my-1"
   >
 
+    {/*<section id="hero" class="border-border border-b pt-8 pb-6">
+      <h1 class="my-4 inline-block text-4xl font-bold sm:my-8 sm:text-5xl">
+        Welcome to PrepViVo
+      </h1>{" "}
+      <a
+        target="_blank"
+        href={`${import.meta.env.BASE_URL.replace(/\/?$/, "/")}rss.xml`}
+        class="inline-block"
+        aria-label="RSS Feed"
+        title="RSS Feed"
+      >
+        <IconRss
+          width={20}
+          height={20}
+          class="stroke-accent scale-125 stroke-3 rtl:-rotate-90"
+        />
+        <span class="sr-only">RSS Feed</span>
+      </a>
+
+      <p>
+        Your guide to Artificial Intelligence, from basics to autonomous agents.
+        Discover AI-powered PSLE English practice and deep dives into the future
+        of technology. Empowering the next generation of learners.
+      </p>
+      <p class="mt-2">
+        Read our latest articles below, or check out the{" "}
+        <LinkButton
+          class="hover:text-accent underline decoration-dashed underline-offset-4"
+          href={getRelativeLocaleUrl(locale, "about")}
+        >
+          About
+        </LinkButton>{" "}
+        page to learn more about our mission.
+      </p>
+      {
+        socials.length > 0 && (
+          <div class="mt-4 flex max-sm:flex-col sm:items-center">
+            <div class="me-2 mb-1 whitespace-nowrap sm:mb-0">
+              {t.home.socialLinks}:
+            </div>
+            <Socials />
+          </div>
+        )
+      }
+    </section>*/}
+
     {
       featuredPosts.length > 0 && (
         <section
@@ -41,10 +87,10 @@ const homePath = getRelativeLocaleUrl(locale, "");
             { "border-border border-b": recentPosts.length > 0 },
           ]}
         >
-          <h2 class="text-2xl font-semibold tracking-wide text-foreground font-heading">
+          <h2 class="text-2xl font-semibold tracking-wide">
             {t.home.featured}
           </h2>
-          <ul class="grid gap-6 mt-6">
+          <ul>
             {featuredPosts.map(data => (
               <Card variant="h3" {...data} />
             ))}
@@ -56,10 +102,10 @@ const homePath = getRelativeLocaleUrl(locale, "");
     {
       recentPosts.length > 0 && (
         <section id="recent-posts" class="pt-12 pb-6">
-          <h2 class="text-2xl font-semibold tracking-wide text-foreground font-heading">
+          <h2 class="text-2xl font-semibold tracking-wide">
             {t.home.recentPosts}
           </h2>
-          <ul class="grid gap-6 mt-6">
+          <ul>
             {recentPosts.slice(0, postsConfig.perIndex).map(data => (
               <Card variant="h3" {...data} />
             ))}
@@ -69,9 +115,9 @@ const homePath = getRelativeLocaleUrl(locale, "");
     }
 
     <div class="my-8 text-center">
-      <LinkButton href={getRelativeLocaleUrl(locale, "posts")} class="bg-accent text-white rounded-full px-6 py-2 hover:bg-accent/90 transition-colors">
+      <LinkButton href={getRelativeLocaleUrl(locale, "posts")}>
         {t.home.allPosts}
-        <IconArrowRight class="inline-block rtl:-rotate-180 ml-2" />
+        <IconArrowRight class="inline-block rtl:-rotate-180" />
       </LinkButton>
     </div>
   </main>

@@ -1,7 +1,7 @@
 ---
-// /home/lim/PrepViVo/my-dev-blog/src/pages/posts/[...page].astro
 import type { GetStaticPaths } from "astro";
 import { getCollection } from "astro:content";
+import { getRelativeLocaleUrl } from "astro:i18n"; // <-- ADD THIS IMPORT
 import Layout from "@/layouts/Layout.astro";
 import Header from "@/components/Header.astro";
 import Breadcrumb from "@/components/Breadcrumb.astro";
@@ -45,7 +45,13 @@ const t = useTranslations(locale);
     <div class="sections-grid my-12">
       {
         page.data.map(post => {
-          const postSlug = getPostSlug(post.id, post.filePath);
+          // 1. Sanitize the slug (removes leading slash to prevent //)
+          const rawSlug = getPostSlug(post.id, post.filePath);
+          const cleanSlug = rawSlug.replace(/^\//, "");
+
+          // 2. Use getRelativeLocaleUrl to automatically handle the /school-blog/ base path
+          const postUrl = getRelativeLocaleUrl(locale, `posts/${cleanSlug}`);
+
           const category =
             post.data.tags && post.data.tags.length > 0
               ? post.data.tags[0]
@@ -62,7 +68,7 @@ const t = useTranslations(locale);
           }
 
           return (
-            <a href={`/posts/${postSlug}`} class="study-card">
+            <a href={postUrl} class="study-card">
               {imageUrl && (
                 <div class="card-image-wrapper">
                   <img src={imageUrl} alt={post.data.title} loading="lazy" />
